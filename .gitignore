@@ -1,0 +1,43 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# Django static and media files
+staticfiles/
+media/
+
+# Vite / Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/
+.virtualenv/
+
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Pytest / Coverage / Migrations
+.coverage
+htmlcov/
+*.mo
+*.pot
+*.py,cover
+migrations/__pycache__/
+migrations/*.pyc
