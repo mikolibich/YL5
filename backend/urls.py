@@ -15,8 +15,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # Include used to import other apps' urls
+from myapp import views 
+from myapp.admin import ROSE_staff_portal
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('ROSE-staff-portal/', ROSE_staff_portal.urls),
+    # browsers cache this redirect since permanent = True
+    path('ROSE-staff-portal', RedirectView.as_view(url='ROSE-staff-portal/', permanent = True)), 
+
 ]
+
+#    path('', include('myapp.urls')),
+admin.site.index_title = "ROSE"
+admin.site.site_header = "ROSE Admin"
+admin.site.site_title = "ROSE Staff Login"
