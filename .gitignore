@@ -26,6 +26,7 @@ venv/
 env/
 ENV/
 .virtualenv/
+.gitignore
 
 
 # IDE / OS files
