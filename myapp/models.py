@@ -139,9 +139,9 @@ class User(AbstractUser):
     Model contains basic validation
     """
 
-    phone_number = models.CharField(max_length=11)
-    dob = models.DateField(verbose_name="Date of Birth")
-    notes = models.TextField(blank=True, help_text="Optional notes about the User")
+    phone_number = models.CharField(max_length=11, blank = True, null = True)
+    dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
+    notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
 
 
     class Meta:

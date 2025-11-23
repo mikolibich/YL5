@@ -9,8 +9,6 @@ from django.shortcuts import render
 from django.urls import path
 from django.conf import settings
 from datetime import datetime
-from django.contrib.auth import get_user_model
-User = get_user_model()
 
 # Admin design
 

@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views 
-from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
 
@@ -29,5 +28,3 @@ urlpatterns = [
     
 ]
 
-# Allow the URLs to have suffixes like .json or .html to specify output type
-urlpatterns = format_suffix_patterns(urlpatterns)

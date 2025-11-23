@@ -27,7 +27,7 @@ class UserView(RetrieveAPIView):
 
 class EventView(RetrieveAPIView):
     """
-    Class for GET methods of the singular event endpoint
+    GET method of the singular event endpoint
     """
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -36,7 +36,7 @@ class EventView(RetrieveAPIView):
 
 class AllEventView(ListAPIView):
     """
-    Class for getting all results from the event endpoint
+    GET method for getting all results from the event endpoint
     """
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -50,7 +50,7 @@ class AllEventView(ListAPIView):
 
 class CreateUserView(CreateAPIView):
     """
-    Class for accessing the users/register endpoint and being able to create a user
+    POST method for creating users 
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer #expects properties from the User Model
@@ -59,7 +59,7 @@ class CreateUserView(CreateAPIView):
 
 class VenueView(RetrieveAPIView): 
     """
-    Class View for GET methods for the singular venue endpoint
+    GET method for the singular venue endpoint
     """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
