@@ -3,8 +3,13 @@ import { useState } from "react";
 export default function EventCard({
   title,
   description,
-  location,
-  spaces,
+  start_datetime,
+  end_datetime,
+  event_type,
+  venue,
+  event_capacity,
+  image,
+  status,
   isMyTickets = false,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -14,25 +19,26 @@ export default function EventCard({
     let currentBookings = JSON.parse(localStorage.getItem("bookings")) || [];
     currentBookings = currentBookings.filter((b) => b.title !== title);
     localStorage.setItem("bookings", JSON.stringify(currentBookings));
-
     alert(`${title} removed from your bookings!`);
     setVisible(false);
   };
 
   const handleButtonClick = (e) => {
     e.stopPropagation();
-    if (isMyTickets && onRemove) {
-      onRemove();
+    const currentBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    if (!currentBookings.some((b) => b.title === title)) {
+      currentBookings.push({
+        title,
+        description,
+        venue,
+        start_datetime,
+        end_datetime,
+        event_capacity,
+      });
+      localStorage.setItem("bookings", JSON.stringify(currentBookings));
+      alert(`${title} added to your bookings!`);
     } else {
-      const currentBookings =
-        JSON.parse(localStorage.getItem("bookings")) || [];
-      if (!currentBookings.some((b) => b.title === title)) {
-        currentBookings.push({ title, description, location, spaces });
-        localStorage.setItem("bookings", JSON.stringify(currentBookings));
-        alert(`${title} added to your bookings!`);
-      } else {
-        alert(`${title} is already in your bookings`);
-      }
+      alert(`${title} is already in your bookings`);
     }
   };
 
@@ -42,20 +48,28 @@ export default function EventCard({
     <section
       className="eventListing"
       onClick={() => setIsExpanded(!isExpanded)}
-      style={{ cursor: "pointer" }}
     >
-      <h3 className="eventTitle">{title}</h3>
+      {image && <img src={image} alt={title} />}
+
+      <h3>{title}</h3>
 
       {!isExpanded && <p>Read more...</p>}
 
       {isExpanded && (
         <>
-          <p className="eventDescription">{description}</p>
-          <p className="eventLocation">{location}</p>
-          <p className="eventSpaces">There are {spaces} spaces left</p>
+          <p>{description}</p>
+          <p>Type: {event_type?.name || "N/A"}</p>
+          <p>
+            Venue: {venue?.name}, {venue?.city}, {venue?.address} (
+            {venue?.postcode})
+          </p>
+          <p>Start: {new Date(start_datetime).toLocaleString()}</p>
+          <p>End: {new Date(end_datetime).toLocaleString()}</p>
+          <p>Capacity: {event_capacity}</p>
+          <p>Status: {status}</p>
+
           {isMyTickets ? (
             <button
-              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 removeBooking();
@@ -64,9 +78,7 @@ export default function EventCard({
               Delete from my bookings
             </button>
           ) : (
-            <button type="button" onClick={handleButtonClick}>
-              {isMyTickets ? "Delete from my bookings" : "Add to my bookings"}
-            </button>
+            <button onClick={handleButtonClick}>Add to my bookings</button>
           )}
         </>
       )}
