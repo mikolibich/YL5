@@ -5,10 +5,9 @@ import os
 from django.core.files.storage import default_storage
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-from django.utils.deconstruct import deconstructible
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from django.contrib.auth.models import AbstractUser
 
 class Venue(models.Model):
 
@@ -39,6 +38,20 @@ class EventTag(models.Model):
     """
     
     name = models.CharField(max_length=60, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+class VenueTag(models.Model):
+    """
+    Tags for the Venue to ensure those with special requirements
+    are aware of the Venue's features.
+    """
+    
+    name = models.CharField(max_length=60, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Event(models.Model):
@@ -86,7 +99,7 @@ class Event(models.Model):
         ordering = ['-start_datetime']
 
     def __str__(self):
-        return f"{self.title} ({self.get_event_type_display()})"
+        return f"{self.title} ({self.venue})"
     
     def save(self, *args, **kwargs):
         # Auto generate slug if not provided
@@ -104,7 +117,7 @@ class Event(models.Model):
 
     def seats_available(self):
         """Return how many seats remain (0 or positive)."""
-        cap = self.capacity()
+        cap = self.venue.capacity
         if cap <= 0:
             return 0
         seats_taken = self.registered_attendees_count()
@@ -114,41 +127,41 @@ class Event(models.Model):
     def is_full(self):
         """True if no seats remain."""
         return self.seats_available() <= 0
+    
+    def get_event_type_display(self):
+        """
+        Gets the event type from the other tag
+        """
 
-class Attendee(models.Model):
+class User(AbstractUser):
     """
-    Attendee / registration record for an event
-    Manual attendee additions can be applied by administrators
+    Manual User accounts can be applied by administrators
     Model contains basic validation
     """
 
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="attendee_profile")
-    phone_number = models.CharField(max_length=11)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    notes = models.TextField(blank=True, help_text="Optional notes about the attendee/registration")
+    phone_number = models.CharField(max_length=11, blank = True, null = True)
+    dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
+    notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
 
 
     class Meta:
-        verbose_name = "Attendee"
-        verbose_name_plural = "Attendees"
+        verbose_name = "User"
+        verbose_name_plural = "Users"
         indexes = [
             models.Index(fields=['phone_number']),
         ]
-        unique_together = ('user', 'phone_number')  # prevent duplicate registrations by number for same event
-        ordering = ['-created_at']
+        unique_together = ('dob', 'phone_number')  # prevent duplicate users
 
     def __str__(self):
-        return f"{self.full_name} — {self.event.title}"
+        return f"{self.username}"
     
     def clean(self):
         """
         Basic validation: if attempting to set status to REGISTERED while event is full,
         raise ValidationError. This enforces manual decision-making in admin/UI.
         """
-        if self.registration_status == self.REGISTERED and self.event.is_full():
-            raise ValidationError("Event is full. Set status to WAITLISTED or cancel another registration first.")
+        #if self.registration_status == self.REGISTERED and self.event.is_full():
+        #   raise ValidationError("Event is full. Set status to WAITLISTED or cancel another registration first.")
         
     def save(self, *args, **kwargs):
         # run full_clean to ensure clean() is applied (callers can skip with clean=False if desired)
@@ -168,7 +181,7 @@ class Registration(models.Model):
         (CANCELLED, 'Cancelled'),
     ]
 
-    attendee = models.ForeignKey(Attendee, on_delete=models.CASCADE, related_name='registrations')
+    attendee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='registrations')
     event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='registrations')
     status = models.CharField(max_length=2, choices=ATTENDEE_STATUS_CHOICES, default=REGISTERED)
     notes = models.TextField(blank=True)
@@ -178,7 +191,7 @@ class Registration(models.Model):
         unique_together = ('attendee', 'event')
 
     def __str__(self):
-        return f"{self.attendee} → {self.event} ({self.get_status_display()})"
+        return f"{self.attendee} → {self.event})"
 
     def clean(self):
         if self.status == self.REGISTERED and self.event.is_full():
