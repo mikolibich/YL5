@@ -1,33 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
+import { fetchEvents } from "../api/events";
 
 export default function Home() {
-  const events = [
-    {
-      title: "Event 1",
-      description: "Description 1",
-      location: "Location 1",
-      spaces: 10,
-    },
-    {
-      title: "Event 2",
-      description: "Description 2",
-      location: "Location 2",
-      spaces: 5,
-    },
-    {
-      title: "Event 3",
-      description: "Description 3",
-      location: "Location 3",
-      spaces: 2,
-    },
-    {
-      title: "Event 4",
-      description: "Description 4",
-      location: "Location 4",
-      spaces: 0,
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        // Fetch all events (or add filters here)
+        const data = await fetchEvents();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEvents();
+  }, []);
+
+  if (loading) return <p>Loading events...</p>;
 
   return (
     <div id="homeWrapper">
@@ -38,13 +33,18 @@ export default function Home() {
       <div id="upcomingEvents" className="blackText">
         <h2 className="blackText leftAlign">Upcoming events</h2>
         <div id="eventListingContainer">
-          {events.map((event, index) => (
+          {events.map((event) => (
             <EventCard
-              key={index}
+              key={event.event_id}
               title={event.title}
               description={event.description}
-              location={event.location}
-              spaces={event.spaces}
+              start_datetime={event.start_datetime}
+              end_datetime={event.end_datetime}
+              event_type={event.event_type}
+              venue={event.venue}
+              event_capacity={event.event_capacity}
+              image={event.image}
+              status={event.status}
             />
           ))}
         </div>
