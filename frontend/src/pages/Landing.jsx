@@ -4,10 +4,7 @@ export default function Landing() {
   return (
     <div id="landingPage">
       <div id="logo">
-        <img
-          src="https://www.programrose.org/wp-content/uploads/2023/06/ROSE-Foundation.png"
-          alt="Logo"
-        />
+        <img src="halfLogo.svg" alt="Logo" />
       </div>
       <div id="landingButtons">
         <Link to="/login">
@@ -16,7 +13,10 @@ export default function Landing() {
         <Link to="/signup">
           <button type="button">Sign Up</button>
         </Link>
-        <Link to="/adminsignup">
+        <Link to="/home">
+          <button type="button">Sign in as guest</button>
+        </Link>
+        <Link to="http://127.0.0.1:8000/rose-staff-portal/">
           <button type="button">Sign Up as Administrator</button>
         </Link>
       </div>

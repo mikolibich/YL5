@@ -18,15 +18,6 @@
   flex: 1;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
   display: flex;
@@ -46,13 +37,10 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -62,6 +50,17 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+#landingPage {
+  background-color: white;
+}
+
+#landingButtons button {
+  background-color: #d9d9da;
+  color: black;
+  border: none;
+  border-radius: 8px;
 }
 
 #navBar {
@@ -80,13 +79,60 @@ button:focus-visible {
   color: white;
 }
 
+#navBar .homeIcon {
+  width: 69px;
+  height: 63px;
+}
+
+#navBar .bookmarkIcon {
+  width: 64px;
+  height: 56px;
+}
+
+#navBar .calendarIcon {
+  width: 58px;
+  height: 63px;
+}
+
+#navBar .settingsIcon {
+  width: 62px;
+  height: 56px;
+}
+
 #homeWrapper,
 #savedEventsWrapper {
   padding: 0 2.5%;
 }
 
+#welcomeText {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#welcomeText img {
+  cursor: pointer;
+}
+
+#welcomeText .heartIcon {
+  width: 28px;
+  height: 28px;
+}
+
+#welcomeText .bellIcon {
+  width: 34px;
+  height: 31px;
+}
+
+#welcomeText #icons {
+  display: flex;
+  gap: 10px;
+}
+
 .headingText {
   font-size: 0.5rem;
+  display: inline;
 }
 
 #upcomingEvents {
@@ -98,13 +144,14 @@ button:focus-visible {
   margin: 10px 0;
   list-style: none;
   width: 100%;
-  background-color: #f6f6f6;
+  background-color: white;
   border-width: 2px;
   border-radius: 10px;
   border-style: solid;
   border-color: #fefefe;
   padding: 0 10px;
   box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .blackText {
@@ -119,7 +166,6 @@ button:focus-visible {
   text-align: left;
 }
 
-#logInBox,
 #landingPage {
   margin: 0 auto;
   display: flex;
@@ -132,10 +178,26 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
+#logInBox h1 {
+  font-size: 1.4em;
+}
+
 #logInBox input {
   margin-bottom: 0.3em;
   font-size: 1em;
   text-align: center;
+}
+
+#logInBox button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.nextButton {
+  border: none;
+  background-color: #f1f1f1;
+  color: black;
 }
 
 #landingPage {
@@ -157,6 +219,38 @@ button:focus-visible {
   margin: 2.5% auto;
   width: 100%;
   display: block;
+}
+
+#eventCard {
+  position: relative;
+}
+
+#eventCard .buttonGroup {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+#eventCard .buttonGroup button {
+  width: auto;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+
+#eventCard button {
+  border: none;
+  background-color: white;
+  color: #34c759;
+}
+
+#eventCard #deleteButton,
+#eventCard #unlikeButton {
+  color: #8e2626;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }
 
 @media (prefers-color-scheme: light) {
