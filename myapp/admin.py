@@ -17,6 +17,7 @@ class ROSEStaffAdminArea(admin.AdminSite):
 
 ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 
+# Actions
 
 class VenueAdmin(admin.ModelAdmin):
     list_display = ["name", "address", "city", "postcode", "max_capacity"]
@@ -35,11 +36,22 @@ class VenueTagAdmin(admin.ModelAdmin):
     exclude = []
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ["title", "event_type", "venue", "start_datetime", "image", "event_capacity", "status"]
+    list_display = ["title", "event_type", "venue", "start_datetime", "image_preview", "event_capacity", "status"]
     list_filter = ["event_type", "status"]
     search_fields = ["title"]
     readonly_fields = ('created_at', 'updated_at')
     exclude = ["slug",]
+
+    def image_preview(self, obj):
+        """
+        Returns an HTML image tag to display the image preview in the admin.
+        """
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" width="80" height="40" />')
+        return mark_safe(f'<img src="{settings.MEDIA_URL}placeholder.png" width="80" height="40" />')
+    
+    image_preview.short_description = "Thumbnail Image"
+
 
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ["attendee", "event", "status", "created_at"]

@@ -5,9 +5,16 @@ import os
 from django.core.files.storage import default_storage
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+
+# Validators
+
+postcode_validator = RegexValidator(
+    regex=r'^\d{5}$',
+    message="Enter a valid Malysian postcode"
+)
 
 class Venue(models.Model):
 
@@ -15,21 +22,24 @@ class Venue(models.Model):
     Venue/location for events
     """
     name = models.CharField(max_length=60)
-    address = models.CharField(max_length=60, blank=True)
-    city = models.CharField(max_length=60, blank=True)
-    postcode = models.CharField(max_length=60, blank=True)
+    address = models.CharField(max_length=60)
+    state = models.CharField(max_length=20)
+    postcode = models.CharField(max_length=5,
+                                 validators=[postcode_validator])
     max_capacity = models.PositiveIntegerField(default=0,
+                                               max_length=4,
                                             help_text="Maximum people allowed at the venue")
     class Meta:
         verbose_name = "Venue"
         verbose_name_plural = "Venues"
         indexes = [
-            models.Index(fields=['city']),
+            models.Index(fields=['state']),
             models.Index(fields=['name']),
         ]
 
     def __str__(self):
         return f"{self.name} - {self.city}" if self.city else self.name
+
     
 
 class EventTag(models.Model):
@@ -80,8 +90,7 @@ class Event(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null = True, related_name="events")
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField(blank=True, null=True)
-    event_capacity = models.PositiveIntegerField(default = 0,
-                                                  help_text="0 =  use the venue's default capacity")
+    event_capacity = models.PositiveIntegerField(help_text="Will be limited to the max venue capacity")
     image = models.ImageField(upload_to="event_images", blank=True, verbose_name="Event Image")
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UPCOMING)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -101,6 +110,29 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.title} ({self.venue})"
     
+    def clean(self):
+
+        # Ensure that the capacity does not exceed venue capacity
+        if self.event_capacity > self.venue.max_capacity:
+            self.event_capacity = self.venue.max_capacity
+ 
+        # Ensure that the seconds are truncated
+        if self.start_datetime:
+            self.start_datetime.second = 0
+            self.start_datetime.microsecond = 0
+
+        if self.end_datetime:
+            self.end_datetime.second = 0
+            self.end_datetime.microsecond = 0
+
+        if self.created_at:
+            self.created_at.second = 0
+            self.created_at.microsecond = 0
+
+        if self.updated_at:
+            self.updated_at.second = 0
+            self.updated_at.microsecond = 0
+    
     def save(self, *args, **kwargs):
         # Auto generate slug if not provided
 
@@ -116,7 +148,10 @@ class Event(models.Model):
         super().save(*args, **kwargs)
 
     def seats_available(self):
-        """Return how many seats remain (0 or positive)."""
+        """
+        Helper Function
+        Return how many seats remain (0 or positive).
+        """
         cap = self.venue.capacity
         if cap <= 0:
             return 0
@@ -127,11 +162,6 @@ class Event(models.Model):
     def is_full(self):
         """True if no seats remain."""
         return self.seats_available() <= 0
-    
-    def get_event_type_display(self):
-        """
-        Gets the event type from the other tag
-        """
 
 class User(AbstractUser):
     """
@@ -143,7 +173,6 @@ class User(AbstractUser):
     dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
 
-
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -154,14 +183,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username}"
-    
-    def clean(self):
-        """
-        Basic validation: if attempting to set status to REGISTERED while event is full,
-        raise ValidationError. This enforces manual decision-making in admin/UI.
-        """
-        #if self.registration_status == self.REGISTERED and self.event.is_full():
-        #   raise ValidationError("Event is full. Set status to WAITLISTED or cancel another registration first.")
         
     def save(self, *args, **kwargs):
         # run full_clean to ensure clean() is applied (callers can skip with clean=False if desired)
@@ -195,4 +216,5 @@ class Registration(models.Model):
 
     def clean(self):
         if self.status == self.REGISTERED and self.event.is_full():
+            self.status = self.WAITLIST
             raise ValidationError("Event is full, cannot register.")
