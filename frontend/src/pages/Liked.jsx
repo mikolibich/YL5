@@ -1,33 +1,37 @@
 import { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
 
-export default function MyTickets() {
-  const [bookings, setBookings] = useState([]);
+export default function Liked() {
+  const [likedEvents, setLikedEvents] = useState([]);
 
   useEffect(() => {
-    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    setBookings(storedBookings);
+    const storedLikedEvents =
+      JSON.parse(localStorage.getItem("liked events")) || [];
+    setLikedEvents(storedLikedEvents);
   }, []);
 
   return (
     <div id="savedEventsWrapper">
       <h1 id="savedEventsText" className="blackText centerAlign">
-        Booked Events
+        Liked Events
       </h1>
 
       <div id="upcomingEvents" className="blackText">
         <div id="eventListingContainer">
-          {bookings.length === 0 ? (
+          {likedEvents.length === 0 ? (
             <p>No saved events yet.</p>
           ) : (
-            bookings.map((event, index) => (
+            likedEvents.map((event, index) => (
               <EventCard
                 key={index}
                 title={event.title}
                 description={event.description}
-                location={event.location}
-                spaces={event.spaces}
-                isMyTickets={true}
+                venue={event.venue}
+                start_datetime={event.start_datetime}
+                end_datetime={event.end_datetime}
+                event_capacity={event.event_capacity}
+                isMyTickets={false}
+                isLiked={true}
               />
             ))
           )}

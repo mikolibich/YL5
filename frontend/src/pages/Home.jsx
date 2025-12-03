@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
 import { fetchEvents } from "../api/events";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
@@ -28,6 +29,14 @@ export default function Home() {
     <div id="homeWrapper">
       <div id="welcomeText" className="headingText">
         <h1 className="blackText leftAlign">Welcome back!</h1>
+        <div id="icons">
+          <Link to="/liked">
+            <img src="heart.svg" className="heartIcon"></img>
+          </Link>
+          <Link to="/notifications">
+            <img src="bell.svg" className="bellIcon"></img>
+          </Link>
+        </div>
       </div>
 
       <div id="upcomingEvents" className="blackText">
