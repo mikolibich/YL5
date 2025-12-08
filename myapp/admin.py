@@ -5,7 +5,7 @@ from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 # Admin design
 
@@ -19,6 +19,11 @@ ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 # Forms
 
 class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('name','phone_number', 'dob', 'is_staff')
+
+class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('name','phone_number', 'dob', 'is_staff')
@@ -53,10 +58,27 @@ class StatusFilter(SimpleListFilter):
             return queryset.filter(end_datetime__lt=timezone.now())
         return queryset
     
-class CustomUser(admin.ModelAdmin):
+class CustomUser(UserAdmin):
     model = User
-    form = CustomUserCreationForm
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     list_display = ['phone_number', 'dob', 'is_staff', 'total_registrations']
+    search_fields = ("phone_number", "name")
+    ordering = ("dob",)
+    list_filter = ("is_staff", "is_superuser")
+
+    fieldsets = (
+        (None, {"fields": ("phone_number", "password")}),
+        ("Personal Info", {"fields": ("name", "dob", "notes")}),
+        ("Permissions", {"fields": ( "is_staff", "is_superuser")}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("phone_number", "password1", "password2"),
+        }),
+    )
 
     @admin.display(description='Total registrations')
     def total_registrations(self, obj):

@@ -185,7 +185,7 @@ class User(AbstractUser):
     # Remove username field
     username = None
     name = models.CharField(max_length=30, blank=True, null=True, help_text='First and Last Name')
-    phone_number = models.CharField(max_length=11, blank = True, null = True, help_text='USed for login', unique=True)
+    phone_number = models.CharField(max_length=11, blank = True, null = True, help_text='Used for login', unique=True)
     dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True, help_text='Format "YYYY-MM-DD"')
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
     
