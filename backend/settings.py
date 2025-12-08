@@ -135,10 +135,16 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'static/'
-STATIC_ROOT = 'static/'
-MEDIA_URL = 'media/'
-MEDIA_ROOT = 'media/'
+STATIC_URL = '/static/'
+#STATIC_ROOT = '/static/'
+MEDIA_URL = '/media/'
+#MEDIA_ROOT = 'media'
+
+# The absence of this code caused the error
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 # Default primary key field type
 

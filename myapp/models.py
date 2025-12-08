@@ -5,9 +5,17 @@ import os
 from django.core.files.storage import default_storage
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+
+# Validators
+
+postcode_validator = RegexValidator(
+    regex=r'^\d{5}$',
+    message="Enter a valid Malysian postcode"
+)
 
 class Venue(models.Model):
 
@@ -15,21 +23,23 @@ class Venue(models.Model):
     Venue/location for events
     """
     name = models.CharField(max_length=60)
-    address = models.CharField(max_length=60, blank=True)
-    city = models.CharField(max_length=60, blank=True)
-    postcode = models.CharField(max_length=60, blank=True)
+    address = models.CharField(max_length=60)
+    state = models.CharField(max_length=20)
+    postcode = models.CharField(max_length=5,
+                                 validators=[postcode_validator])
     max_capacity = models.PositiveIntegerField(default=0,
                                             help_text="Maximum people allowed at the venue")
     class Meta:
         verbose_name = "Venue"
         verbose_name_plural = "Venues"
         indexes = [
-            models.Index(fields=['city']),
+            models.Index(fields=['state']),
             models.Index(fields=['name']),
         ]
 
     def __str__(self):
-        return f"{self.name} - {self.city}" if self.city else self.name
+        return f"{self.name} - {self.state}" if self.state else self.name
+
     
 
 class EventTag(models.Model):
@@ -60,17 +70,9 @@ class Event(models.Model):
     """
 
     #status choices
-    UPCOMING = 'UP'
-    ONGOING = 'OG'
-    COMPLETED = 'CP'
-    CANCELLED = 'CC'
-
-    STATUS_CHOICES = [
-        (UPCOMING, 'Upcoming'),
-        (ONGOING, 'Ongoing'),
-        (COMPLETED, 'Completed'),
-        (CANCELLED, 'Cancelled')
-    ]
+    UPCOMING = 'Upcoming'
+    ONGOING = 'Ongoing'
+    COMPLETED = 'Completed'
 
     event_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
@@ -78,12 +80,10 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     event_type = models.ForeignKey(EventTag, on_delete=models.SET_DEFAULT, null = True, related_name="events", default = "Standard")
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null = True, related_name="events")
-    start_datetime = models.DateTimeField()
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    event_capacity = models.PositiveIntegerField(default = 0,
-                                                  help_text="0 =  use the venue's default capacity")
-    image = models.ImageField(upload_to="event_images", blank=True, verbose_name="Event Image")
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UPCOMING)
+    start_datetime = models.DateTimeField(verbose_name = 'Start Time')
+    end_datetime = models.DateTimeField(verbose_name = 'End Time')
+    event_capacity = models.PositiveIntegerField(help_text="Will be limited to the max venue capacity")
+    image = models.ImageField(upload_to="media/event_images", blank=True, verbose_name="Event Image")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -92,7 +92,6 @@ class Event(models.Model):
         verbose_name_plural = "Events"
         indexes = [
             models.Index(fields=['start_datetime']),
-            models.Index(fields=['status']),
             models.Index(fields=['event_type']),
             models.Index(fields=['venue']),
         ]
@@ -100,6 +99,32 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.venue})"
+    
+    def clean(self):
+
+        # Ensure that the capacity does not exceed venue capacity
+        if self.event_capacity > self.venue.max_capacity:
+            self.event_capacity = self.venue.max_capacity
+ 
+        # Ensure that the seconds are truncated
+        if self.start_datetime:
+            self.start_datetime = self.start_datetime.replace(
+                second=0,
+                microsecond=0)
+
+        if self.end_datetime:
+            self.end_datetime = self.end_datetime.replace(
+                second=0,
+                microsecond=0)
+
+        if self.created_at:
+            self.created_at = self.created_at.replace(
+                second=0, microsecond=0)
+
+        if self.updated_at:
+            self.updated_at = self.updated_at.replace(
+                second=0,
+                microsecond=0)
     
     def save(self, *args, **kwargs):
         # Auto generate slug if not provided
@@ -113,10 +138,15 @@ class Event(models.Model):
                 count += 1
             self.slug = slug
 
+        self.full_clean()
+
         super().save(*args, **kwargs)
 
     def seats_available(self):
-        """Return how many seats remain (0 or positive)."""
+        """
+        Helper Function
+        Return how many seats remain (0 or positive).
+        """
         cap = self.venue.capacity
         if cap <= 0:
             return 0
@@ -128,11 +158,23 @@ class Event(models.Model):
         """True if no seats remain."""
         return self.seats_available() <= 0
     
-    def get_event_type_display(self):
-        """
-        Gets the event type from the other tag
-        """
+    def is_complete(self):
+        """Determines whether the end time has elapsed"""
+        return self.end_datetime < timezone.now()
+    
+    def is_commencing(self):
+        """Determines whether the event has started but not finished"""
+        return self.start_datetime <= timezone.now() <= self.end_datetime
+                  
+    @property
+    def status(self):
+        if self.is_complete():
+            return self.COMPLETED
+        elif self.is_commencing():
+            return self.ONGOING
+        return self.UPCOMING
 
+            
 class User(AbstractUser):
     """
     Manual User accounts can be applied by administrators
@@ -142,7 +184,6 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=11, blank = True, null = True)
     dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
-
 
     class Meta:
         verbose_name = "User"
@@ -154,14 +195,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username}"
-    
-    def clean(self):
-        """
-        Basic validation: if attempting to set status to REGISTERED while event is full,
-        raise ValidationError. This enforces manual decision-making in admin/UI.
-        """
-        #if self.registration_status == self.REGISTERED and self.event.is_full():
-        #   raise ValidationError("Event is full. Set status to WAITLISTED or cancel another registration first.")
         
     def save(self, *args, **kwargs):
         # run full_clean to ensure clean() is applied (callers can skip with clean=False if desired)
@@ -174,11 +207,9 @@ class Registration(models.Model):
     """
     REGISTERED = 'RG'
     WAITLIST = 'WL'
-    CANCELLED = 'CC'
     ATTENDEE_STATUS_CHOICES = [
         (REGISTERED, 'Registered'),
         (WAITLIST, 'Waitlist'),
-        (CANCELLED, 'Cancelled'),
     ]
 
     attendee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='registrations')
@@ -195,4 +226,5 @@ class Registration(models.Model):
 
     def clean(self):
         if self.status == self.REGISTERED and self.event.is_full():
+            self.status = self.WAITLIST
             raise ValidationError("Event is full, cannot register.")
