@@ -1,15 +1,11 @@
 from django.contrib import admin
 from .models import *
 from django.utils import timezone
-from datetime import date
 from django.utils.html import mark_safe
-from django.db import models
-from django.shortcuts import render
-from django.urls import path
-from django.conf import settings
-from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm
 
 # Admin design
 
@@ -19,6 +15,15 @@ class ROSEStaffAdminArea(admin.AdminSite):
 ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 
 # Actions
+
+# Forms
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('phone_number', 'dob', 'is_staff')
+
+    
 
 # Filters
 
@@ -47,6 +52,25 @@ class StatusFilter(SimpleListFilter):
         if value == 'COMPLETED':
             return queryset.filter(end_datetime__lt=timezone.now())
         return queryset
+    
+class CustomUser(admin.ModelAdmin):
+    model = User
+    form = CustomUserCreationForm
+    list_display = ['phone_number', 'dob', 'is_staff', 'total_registrations']
+
+    @admin.display(description='Total registrations')
+    def total_registrations(self, obj):
+        # Cehck if the user is a staff or superuser
+        if obj.is_superuser or obj.is_staff:
+            return "~"
+        else:
+            return obj.registrations.count() 
+        
+    def get_model_perms(self, request):
+        # return empty perms dict for non-superusers
+        if not request.user.is_superuser:
+            return {}
+        return super().get_model_perms(request)
 
 class VenueAdmin(admin.ModelAdmin):
     list_display = ["name", "address", "state", "postcode", "max_capacity"]
@@ -95,7 +119,8 @@ class AttendeeAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
     list_filter = ("created_at",)
 
-ROSE_staff_portal.register(User)
+# ROSE_staff_portal.register(User)
+ROSE_staff_portal.register(User, CustomUser)
 ROSE_staff_portal.register(Venue, VenueAdmin)
 ROSE_staff_portal.register(VenueTag, VenueTagAdmin)
 ROSE_staff_portal.register(EventTag, EventTagAdmin)

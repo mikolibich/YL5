@@ -181,6 +181,7 @@ class User(AbstractUser):
     Model contains basic validation
     """
 
+    name = models.CharField(max_length=30, blank=True, null=True, help_text='First and Last Name')
     phone_number = models.CharField(max_length=11, blank = True, null = True)
     dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
