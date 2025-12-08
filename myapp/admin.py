@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django import forms
 
 # Admin design
 
@@ -28,7 +29,21 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ('name','phone_number', 'dob', 'is_staff')
 
-    
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        start = cleaned_data.get("start_datetime")
+        end = cleaned_data.get("end_datetime")
+
+        if start and end and end <= start:
+            raise ValidationError("The event can not run for a negative duration")
+
+        return cleaned_data
 
 # Filters
 
@@ -62,7 +77,7 @@ class CustomUser(UserAdmin):
     model = User
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
-    list_display = ['phone_number', 'dob', 'is_staff', 'total_registrations']
+    list_display = ['name', 'phone_number', 'dob', 'is_staff', 'total_registrations']
     search_fields = ("phone_number", "name")
     ordering = ("dob",)
     list_filter = ("is_staff", "is_superuser")
@@ -76,7 +91,7 @@ class CustomUser(UserAdmin):
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("phone_number", "password1", "password2"),
+            "fields": ("name", "dob", "phone_number", "password1", "password2", "is_staff"),
         }),
     )
 
@@ -95,7 +110,7 @@ class CustomUser(UserAdmin):
         return super().get_model_perms(request)
 
 class VenueAdmin(admin.ModelAdmin):
-    list_display = ["name", "address", "state", "postcode", "max_capacity"]
+    list_display = ["name","address", "state", "postcode", "max_capacity"]
     list_filter = ["state"]
     search_fields = ["name"]
     exclude = []
@@ -111,6 +126,7 @@ class VenueTagAdmin(admin.ModelAdmin):
     exclude = []
 
 class EventAdmin(admin.ModelAdmin):
+    form = EventForm
     list_display = ["title", "event_type", "venue", "start_datetime", "image_preview", "event_capacity", "status"]
     list_filter = ["event_type", StatusFilter]
     search_fields = ["title"]

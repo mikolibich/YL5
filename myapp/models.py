@@ -18,6 +18,17 @@ postcode_validator = RegexValidator(
     message="Enter a valid Malysian postcode"
 )
 
+class VenueTag(models.Model):
+    """
+    Tags for the Venue to ensure those with special requirements
+    are aware of the Venue's features.
+    """
+    
+    name = models.CharField(max_length=60, unique=True)
+
+    def __str__(self):
+        return self.name
+    
 class Venue(models.Model):
 
     """
@@ -25,6 +36,9 @@ class Venue(models.Model):
     """
     name = models.CharField(max_length=60)
     address = models.CharField(max_length=60)
+    venue_feature = models.ForeignKey(VenueTag, on_delete=models.SET_NULL,
+                                       null = True, related_name="venues",
+                                       verbose_name="Venue Tag")
     state = models.CharField(max_length=20)
     postcode = models.CharField(max_length=5,
                                  validators=[postcode_validator])
@@ -52,17 +66,6 @@ class EventTag(models.Model):
 
     def __str__(self):
         return self.name
-    
-class VenueTag(models.Model):
-    """
-    Tags for the Venue to ensure those with special requirements
-    are aware of the Venue's features.
-    """
-    
-    name = models.CharField(max_length=60, unique=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Event(models.Model):
@@ -79,7 +82,7 @@ class Event(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField(blank=True)
-    event_type = models.ForeignKey(EventTag, on_delete=models.SET_DEFAULT, null = True, related_name="events", default = "Standard")
+    event_type = models.ForeignKey(EventTag, on_delete=models.SET_NULL, null = True, related_name="events")
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null = True, related_name="events")
     start_datetime = models.DateTimeField(verbose_name = 'Start Time')
     end_datetime = models.DateTimeField(verbose_name = 'End Time')
@@ -129,7 +132,6 @@ class Event(models.Model):
     
     def save(self, *args, **kwargs):
         # Auto generate slug if not provided
-
         if not self.slug:
             base = slugify(self.title)[:140]
             slug = base
@@ -166,6 +168,9 @@ class Event(models.Model):
     def is_commencing(self):
         """Determines whether the event has started but not finished"""
         return self.start_datetime <= timezone.now() <= self.end_datetime
+    
+    def get_likes(self):
+        return 
                   
     @property
     def status(self):
@@ -191,6 +196,9 @@ class User(AbstractUser):
     
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []  # createsuperuser will only ask for phone + password
+
+    def get_short_name(self):
+        return self.name if self.name else 'Guest'
     
     objects = UserManager()
 
@@ -237,3 +245,10 @@ class Registration(models.Model):
         if self.status == self.REGISTERED and self.event.is_full():
             self.status = self.WAITLIST
             raise ValidationError("Event is full, cannot register.")
+
+class Likes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, )
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'event')
