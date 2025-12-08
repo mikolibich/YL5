@@ -31,3 +31,4 @@ if settings.DEBUG:
 ROSE_staff_portal.index_title = "ROSE FOUNDATION"
 ROSE_staff_portal.site_header = "ROSE Foundation Admin"
 ROSE_staff_portal.site_title = "ROSE Foundation Staff Login"
+ROSE_staff_portal.site_url = "/kv6014/rose-foundation"

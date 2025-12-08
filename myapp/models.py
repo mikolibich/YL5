@@ -27,7 +27,6 @@ class Venue(models.Model):
     postcode = models.CharField(max_length=5,
                                  validators=[postcode_validator])
     max_capacity = models.PositiveIntegerField(default=0,
-                                               max_length=4,
                                             help_text="Maximum people allowed at the venue")
     class Meta:
         verbose_name = "Venue"
@@ -38,7 +37,7 @@ class Venue(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.name} - {self.city}" if self.city else self.name
+        return f"{self.name} - {self.state}" if self.state else self.name
 
     
 
@@ -118,20 +117,23 @@ class Event(models.Model):
  
         # Ensure that the seconds are truncated
         if self.start_datetime:
-            self.start_datetime.second = 0
-            self.start_datetime.microsecond = 0
+            self.start_datetime = self.start_datetime.replace(
+                second=0,
+                microsecond=0)
 
         if self.end_datetime:
-            self.end_datetime.second = 0
-            self.end_datetime.microsecond = 0
+            self.end_datetime = self.end_datetime.replace(
+                second=0,
+                microsecond=0)
 
         if self.created_at:
-            self.created_at.second = 0
-            self.created_at.microsecond = 0
+            self.created_at = self.created_at.replace(
+                second=0, microsecond=0)
 
         if self.updated_at:
-            self.updated_at.second = 0
-            self.updated_at.microsecond = 0
+            self.updated_at = self.updated_at.replace(
+                second=0,
+                microsecond=0)
     
     def save(self, *args, **kwargs):
         # Auto generate slug if not provided
@@ -144,6 +146,8 @@ class Event(models.Model):
                 slug = f"{base}-{count}"
                 count += 1
             self.slug = slug
+
+        self.full_clean()
 
         super().save(*args, **kwargs)
 

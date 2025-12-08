@@ -20,8 +20,8 @@ ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 # Actions
 
 class VenueAdmin(admin.ModelAdmin):
-    list_display = ["name", "address", "city", "postcode", "max_capacity"]
-    list_filter = ["city"]
+    list_display = ["name", "address", "state", "postcode", "max_capacity"]
+    list_filter = ["state"]
     search_fields = ["name"]
     exclude = []
 
@@ -47,8 +47,8 @@ class EventAdmin(admin.ModelAdmin):
         Returns an HTML image tag to display the image preview in the admin.
         """
         if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" width="80" height="40" />')
-        return mark_safe(f'<img src="{settings.MEDIA_URL}placeholder.png" width="80" height="40" />')
+            return mark_safe(f'<img src="{obj.image.url}" width="120" height="60" style="object-fit:cover;"/>')
+        return mark_safe(f'<img src="/static/placeholder.png" width="120" height="60" style="object-fit:cover;"/>')
     
     image_preview.short_description = "Thumbnail Image"
 

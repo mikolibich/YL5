@@ -135,10 +135,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'static/'
-STATIC_ROOT = 'static/'
+STATIC_URL = '/static/'
+#STATIC_ROOT = '/static/'
 MEDIA_URL = 'media/'
-MEDIA_ROOT = 'media/'
+#MEDIA_ROOT = 'media'
 
 # Default primary key field type
 
