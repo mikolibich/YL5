@@ -137,8 +137,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 #STATIC_ROOT = '/static/'
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 #MEDIA_ROOT = 'media'
+
+# The absence of this code caused the error
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 # Default primary key field type
 
