@@ -253,6 +253,24 @@ button:focus-visible {
   right: 10px;
 }
 
+#signup-text {
+  text-align: center;
+}
+
+#backArrowGuest {
+  display: inline;
+}
+
+#welcomeTextGuest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#welcomeTextGuest h1 {
+  padding-left: 20px;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
