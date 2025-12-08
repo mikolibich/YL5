@@ -9,6 +9,7 @@ from django.core.validators import RegexValidator
 from django.contrib import messages
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from .managers import UserManager
 
 # Validators
 
@@ -181,10 +182,20 @@ class User(AbstractUser):
     Model contains basic validation
     """
 
+    # Remove username field
+    username = None
     name = models.CharField(max_length=30, blank=True, null=True, help_text='First and Last Name')
-    phone_number = models.CharField(max_length=11, blank = True, null = True)
-    dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True)
+    phone_number = models.CharField(max_length=11, blank = True, null = True, help_text='USed for login', unique=True)
+    dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True, help_text='Format "YYYY-MM-DD"')
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
+    
+    USERNAME_FIELD = "phone_number"
+    REQUIRED_FIELDS = []  # createsuperuser will only ask for phone + password
+    
+    objects = UserManager()
+
+    def __str__(self):
+        return f"{self.name} - {self.phone_number}" if self.name else f"{self.phone_number}"
 
     class Meta:
         verbose_name = "User"
@@ -193,9 +204,6 @@ class User(AbstractUser):
             models.Index(fields=['phone_number']),
         ]
         unique_together = ('dob', 'phone_number')  # prevent duplicate users
-
-    def __str__(self):
-        return f"{self.username}"
         
     def save(self, *args, **kwargs):
         # run full_clean to ensure clean() is applied (callers can skip with clean=False if desired)

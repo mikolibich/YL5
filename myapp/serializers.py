@@ -19,7 +19,7 @@ class VenueSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "address",
+            "state",
             "city",
             "postcode",
             "max_capacity",
@@ -56,7 +56,6 @@ class EventSerializer(serializers.ModelSerializer):
             "end_datetime",
             "event_capacity",
             "image",
-            "status",
             "created_at",
             "updated_at",
         ]
@@ -74,8 +73,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
-            "user",
+            "name",
             "phone_number",
+            "dob",
             "notes",
         ]
 

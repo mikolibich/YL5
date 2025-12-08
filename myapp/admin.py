@@ -21,7 +21,7 @@ ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('phone_number', 'dob', 'is_staff')
+        fields = ('name','phone_number', 'dob', 'is_staff')
 
     
 
