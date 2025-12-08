@@ -1,15 +1,12 @@
 from django.contrib import admin
 from .models import *
 from django.utils import timezone
-from datetime import date
 from django.utils.html import mark_safe
-from django.db import models
-from django.shortcuts import render
-from django.urls import path
-from django.conf import settings
-from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django import forms
 
 # Admin design
 
@@ -19,6 +16,34 @@ class ROSEStaffAdminArea(admin.AdminSite):
 ROSE_staff_portal = ROSEStaffAdminArea(name="Master Login portal name")
 
 # Actions
+
+# Forms
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('name','phone_number', 'dob', 'is_staff')
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('name','phone_number', 'dob', 'is_staff')
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        start = cleaned_data.get("start_datetime")
+        end = cleaned_data.get("end_datetime")
+
+        if start and end and end <= start:
+            raise ValidationError("The event can not run for a negative duration")
+
+        return cleaned_data
 
 # Filters
 
@@ -47,9 +72,45 @@ class StatusFilter(SimpleListFilter):
         if value == 'COMPLETED':
             return queryset.filter(end_datetime__lt=timezone.now())
         return queryset
+    
+class CustomUser(UserAdmin):
+    model = User
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    list_display = ['name', 'phone_number', 'dob', 'is_staff', 'total_registrations']
+    search_fields = ("phone_number", "name")
+    ordering = ("dob",)
+    list_filter = ("is_staff", "is_superuser")
+
+    fieldsets = (
+        (None, {"fields": ("phone_number", "password")}),
+        ("Personal Info", {"fields": ("name", "dob", "notes")}),
+        ("Permissions", {"fields": ( "is_staff", "is_superuser")}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("name", "dob", "phone_number", "password1", "password2", "is_staff"),
+        }),
+    )
+
+    @admin.display(description='Total registrations')
+    def total_registrations(self, obj):
+        # Cehck if the user is a staff or superuser
+        if obj.is_superuser or obj.is_staff:
+            return "~"
+        else:
+            return obj.registrations.count() 
+        
+    def get_model_perms(self, request):
+        # return empty perms dict for non-superusers
+        if not request.user.is_superuser:
+            return {}
+        return super().get_model_perms(request)
 
 class VenueAdmin(admin.ModelAdmin):
-    list_display = ["name", "address", "state", "postcode", "max_capacity"]
+    list_display = ["name","address", "state", "postcode", "max_capacity"]
     list_filter = ["state"]
     search_fields = ["name"]
     exclude = []
@@ -65,6 +126,7 @@ class VenueTagAdmin(admin.ModelAdmin):
     exclude = []
 
 class EventAdmin(admin.ModelAdmin):
+    form = EventForm
     list_display = ["title", "event_type", "venue", "start_datetime", "image_preview", "event_capacity", "status"]
     list_filter = ["event_type", StatusFilter]
     search_fields = ["title"]
@@ -95,7 +157,8 @@ class AttendeeAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
     list_filter = ("created_at",)
 
-ROSE_staff_portal.register(User)
+# ROSE_staff_portal.register(User)
+ROSE_staff_portal.register(User, CustomUser)
 ROSE_staff_portal.register(Venue, VenueAdmin)
 ROSE_staff_portal.register(VenueTag, VenueTagAdmin)
 ROSE_staff_portal.register(EventTag, EventTagAdmin)
