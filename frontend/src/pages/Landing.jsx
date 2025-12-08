@@ -13,7 +13,7 @@ export default function Landing() {
         <Link to="/signup">
           <button type="button">Sign Up</button>
         </Link>
-        <Link to="/home">
+        <Link to="/guest">
           <button type="button">Sign in as guest</button>
         </Link>
         <Link to="http://127.0.0.1:8000/rose-staff-portal/">

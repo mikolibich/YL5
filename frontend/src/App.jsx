@@ -10,6 +10,7 @@ import Landing from "./pages/Landing";
 import Signup from "./pages/Signup";
 import Liked from "./pages/Liked";
 import Notifications from "./pages/Notifications";
+import Guest from "./pages/Guest";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -90,15 +91,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/signup"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <Signup />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
+      <Route path="/guest" element={<Guest />} />
     </Routes>
   );
 }
