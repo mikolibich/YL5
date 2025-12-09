@@ -5,16 +5,29 @@ from enum import Enum
 import phonenumbers 
 
 
-def format_phone_number(phone_number: str, country_code: str = "GB"):  # Would be 'MY' if it were in Malaysia
+def format_phone_number(phone_number: str, country_code: str = "GB") -> str:
     """
-    Returns the phone number in an appropriate format for the twilio function
-    
-    :param phone_number: Description
-    :type phone_number: str
+    Normalises a phone number into E.164 format for Twilio WhatsApp.
+    Accepts:
+        - Local numbers (e.g. "07123456789")
+        - International numbers (e.g. "+447123456789")
+    """
 
-    """
-    number = phonenumbers.parse(phone_number, country_code)
-    return phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
+    # If number already starts with +, assume it's complete
+    if phone_number.startswith("+"):
+        try:
+            parsed = phonenumbers.parse(phone_number)
+        except Exception:
+            raise ValueError("Invalid phone number format.")
+        return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+
+    # Otherwise parse using the supplied country code (default GB)
+    try:
+        parsed = phonenumbers.parse(phone_number, country_code)
+    except Exception:
+        raise ValueError("Invalid phone number format.")
+    
+    return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
 
 
 def send_whatsapp_message(to_number: str, body: str) -> None:
