@@ -41,7 +41,7 @@ class Venue(models.Model):
                                        verbose_name="Venue Tag")
     state = models.CharField(max_length=20)
     postcode = models.CharField(max_length=5,
-                                 validators=[postcode_validator])
+                                 validators=[postcode_validator], help_text="Format: 12345")
     max_capacity = models.PositiveIntegerField(default=0,
                                             help_text="Maximum people allowed at the venue")
     class Meta:
@@ -84,8 +84,8 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     event_type = models.ForeignKey(EventTag, on_delete=models.SET_NULL, null = True, related_name="events")
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null = True, related_name="events")
-    start_datetime = models.DateTimeField(verbose_name = 'Start Time')
-    end_datetime = models.DateTimeField(verbose_name = 'End Time')
+    start_datetime = models.DateTimeField(verbose_name = 'Start Time', help_text="Will be truncated to the nearest 5 minute interval")
+    end_datetime = models.DateTimeField(verbose_name = 'End Time', help_text="Will be truncated to the nearest 5 minute interval")
     event_capacity = models.PositiveIntegerField(help_text="Will be limited to the max venue capacity")
     image = models.ImageField(upload_to="media/event_images", blank=True, verbose_name="Event Image")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -150,13 +150,21 @@ class Event(models.Model):
         Helper Function
         Return how many seats remain (0 or positive).
         """
-        cap = self.venue.capacity
+        cap = self.event_capacity
         if cap <= 0:
             return 0
         seats_taken = self.registered_attendees_count()
         remaining = cap - seats_taken
         return max(0, remaining)
 
+    def registered_attendees_count(self):
+        """
+        Helper Function
+        Returns the amount of attendees which are registered to the event
+        """
+        return self.registrations.filter(status=Registration.REGISTERED).count()
+
+        
     def is_full(self):
         """True if no seats remain."""
         return self.seats_available() <= 0
@@ -242,6 +250,7 @@ class Registration(models.Model):
         return f"{self.attendee} → {self.event})"
 
     def clean(self):
+        print(self.event.is_full(), "EVENT FULL")
         if self.status == self.REGISTERED and self.event.is_full():
             self.status = self.WAITLIST
             raise ValidationError("Event is full, cannot register.")

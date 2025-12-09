@@ -146,7 +146,7 @@ class EventAdmin(admin.ModelAdmin):
 
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ["attendee", "event", "status", "created_at"]
-    list_filter = ["event", 'status']
+    list_filter = ['status', ]
     search_fields = ["attendee__name"]
     exclude = []
     readonly_fields = ('created_at',)
