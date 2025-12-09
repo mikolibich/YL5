@@ -1,45 +1,55 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Login({ onLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
+
+  // Always reset login state on page load
   localStorage.setItem("isLoggedIn", "false");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (username === "User1" && password === "Password1") {
-      onLogin(true); // set user as logged in
+    // Load users object
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+
+    // Check if the phone exists
+    if (users[phone]) {
+      // Successful login
+      onLogin(true);
       localStorage.setItem("isLoggedIn", "true");
-      navigate("/home"); // redirect to home page
+
+      // Optional: store user info for later use
+      localStorage.setItem("fname", users[phone].fname);
+      localStorage.setItem("lname", users[phone].lname);
+      localStorage.setItem("phone", phone);
+
+      navigate("/home");
     } else {
-      alert("Invalid username or password!");
+      alert("No account found with that phone number!");
     }
   };
 
   return (
     <div id="logInBox" style={{ padding: "2rem" }}>
-      <h1 class="blackText">Login Page</h1>
+      <Link to="/landing">
+        <img src="leftArrow.svg" alt="Back" />
+      </Link>
+      <h1 className="blackText">Phone Number</h1>
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           required
         />
         <br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <br />
-        <button type="submit">Log In</button>
+        <button type="submit" className="nextButton">
+          Next <img src="rightArrow.svg" alt="Next" />
+        </button>
       </form>
     </div>
   );

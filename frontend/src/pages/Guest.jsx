@@ -3,7 +3,7 @@ import EventCard from "../components/EventCard";
 import { fetchEvents } from "../api/events";
 import { Link } from "react-router-dom";
 
-export default function Home() {
+export default function Guest() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,17 +27,21 @@ export default function Home() {
 
   return (
     <div id="homeWrapper">
-      <div id="welcomeText" className="headingText">
-        <h1 className="blackText leftAlign">Welcome back!</h1>
-        <div id="icons">
-          <Link to="/liked">
-            <img src="heart.svg" className="heartIcon"></img>
-          </Link>
-          <Link to="/notifications">
-            <img src="bell.svg" className="bellIcon"></img>
-          </Link>
-        </div>
+      <div id="welcomeTextGuest" className="headingText">
+        <Link to="/landing">
+          <img src="leftArrow.svg" alt="back" id="backArrowGuest" />
+        </Link>
+        <h1 className="blackText leftAlign">Rose Foundation</h1>
       </div>
+
+      <nav id="navBar" class="centerAlign">
+        <Link to="/Login">
+          <img src="calendar.svg" className="calendarIcon"></img>
+        </Link>
+        <Link to="/settings">
+          <img src="settings.svg" className="settingsIcon"></img>
+        </Link>
+      </nav>
 
       <div id="upcomingEvents" className="blackText">
         <h2 className="blackText leftAlign">Upcoming events</h2>

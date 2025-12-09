@@ -11,6 +11,7 @@ export default function EventCard({
   image,
   status,
   isMyTickets = false,
+  isLiked = false,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -47,6 +48,7 @@ export default function EventCard({
   return (
     <section
       className="eventListing"
+      id="eventCard"
       onClick={() => setIsExpanded(!isExpanded)}
     >
       {image && <img src={image} alt={title} />}
@@ -68,17 +70,72 @@ export default function EventCard({
           <p>Capacity: {event_capacity}</p>
           <p>Status: {status}</p>
 
-          {isMyTickets ? (
+          {isLiked ? (
             <button
+              id="unlikeButton"
+              onClick={(e) => {
+                e.stopPropagation();
+                let likedEvents =
+                  JSON.parse(localStorage.getItem("liked events")) || [];
+                likedEvents = likedEvents.filter((b) => b.title !== title);
+                localStorage.setItem(
+                  "liked events",
+                  JSON.stringify(likedEvents)
+                );
+                alert(`${title} removed from your liked events!`);
+                setVisible(false);
+              }}
+            >
+              Unlike
+            </button>
+          ) : isMyTickets ? (
+            <button
+              className="button"
+              id="deleteButton"
               onClick={(e) => {
                 e.stopPropagation();
                 removeBooking();
               }}
             >
-              Delete from my bookings
+              Cancel booking
             </button>
           ) : (
-            <button onClick={handleButtonClick}>Add to my bookings</button>
+            <div className="buttonGroup">
+              <button
+                className="button"
+                id="addButton"
+                onClick={handleButtonClick}
+              >
+                Book Event
+              </button>
+              <button
+                className="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const likedEvents =
+                    JSON.parse(localStorage.getItem("liked events")) || [];
+                  if (!likedEvents.some((b) => b.title === title)) {
+                    likedEvents.push({
+                      title,
+                      description,
+                      venue,
+                      start_datetime,
+                      end_datetime,
+                      event_capacity,
+                    });
+                    localStorage.setItem(
+                      "liked events",
+                      JSON.stringify(likedEvents)
+                    );
+                    alert(`${title} added to your liked events!`);
+                  } else {
+                    alert(`${title} is already in your liked events`);
+                  }
+                }}
+              >
+                Like
+              </button>
+            </div>
           )}
         </>
       )}
