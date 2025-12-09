@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/user/register/', CreateUserView.as_view(), name = 'register'),
     path("api/token/", CustomTokenObtainPairView.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
-    path("api-auth/", include("rest_framework.urls")),
+    path("api-auth/", include("rest_framework.urls")), # only needed in the gui version
     path("api/", include("myapp.urls")) # if the previous paths are not found go to myapps url paths
 ]
 

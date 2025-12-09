@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_crontab',
     'corsheaders',
     'django_filters',
     'drf_spectacular',
@@ -77,8 +78,14 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Your project description',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
 }
+
+CRONJOBS = [
+    # Every minute
+    ('* * * * *', 'django.core.management.call_command', ['send_whatsapp_notification']),
+]
+
+# Minutes 0-59, hours 0-23, day (0-31), month (1-12), day of the week (0-6)
 
 TEMPLATES = [
     {

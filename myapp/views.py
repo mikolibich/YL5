@@ -42,8 +42,7 @@ class AllEventView(ListAPIView):
     serializer_class = EventSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['event_type', 'venue',
-                        'status',]  # Fields you want to filter by
+    filterset_fields = ['event_type', 'venue']  # Fields you want to filter by
     search_fields = ['title',]
     ordering_fields = ['event_capacity', '-start_datetime']
 
@@ -74,7 +73,7 @@ class AllVenueView(ListAPIView):
     serializer_class = VenueSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['city']
+    filterset_fields = ['state']
     search_fields = ['name', 'address', 'postcode']
     ordering_fields = ['-max_capacity']
 

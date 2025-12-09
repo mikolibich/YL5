@@ -201,6 +201,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=11, blank = True, null = True, help_text='Used for login', unique=True)
     dob = models.DateField(verbose_name="Date of Birth", blank = True, null = True, help_text='Format "YYYY-MM-DD"')
     notes = models.TextField(blank=True, null = True, help_text="Optional notes about the User")
+    wants_notifications = models.BooleanField(default=False, help_text='Determines whether the user receives whatsapp notifications')
     
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []  # createsuperuser will only ask for phone + password
