@@ -107,13 +107,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Change to your DB engine
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
-        'CONN_MAX_AGE': 10,  # Closes connection after each request
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'yl5_db',
+        'USER': 'yl5_user',
+        'PASSWORD': 'MyStrongPass123',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'CONN_MAX_AGE': 10,
     }
 }
 
