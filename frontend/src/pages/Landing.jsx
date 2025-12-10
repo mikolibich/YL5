@@ -17,7 +17,7 @@ export default function Landing() {
           <button type="button">Sign in as guest</button>
         </Link>
         <Link
-          to="http://127.0.0.2:8000/rose-staff-portal/"
+          to="http://127.0.0.1:8000/rose-staff-portal/"
           target="_blank"
           rel="noopener noreferrer"
         >

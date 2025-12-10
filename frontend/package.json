@@ -11,9 +11,12 @@
     "api": "node src/api/server.cjs"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "react": "^19.1.1",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5"
   },

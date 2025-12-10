@@ -1,5 +1,5 @@
 export async function fetchEvents(filters = {}) {
-  const baseUrl = "http://127.0.0.2:8000/api/events/";
+  const baseUrl = "http://127.0.0.1:8000/api/events/";
 
   // Convert filters into URL query parameters
   const params = new URLSearchParams(filters).toString();

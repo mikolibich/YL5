@@ -11,6 +11,9 @@ import Signup from "./pages/Signup";
 import Liked from "./pages/Liked";
 import Notifications from "./pages/Notifications";
 import Guest from "./pages/Guest";
+import GuestSettings from "./pages/GuestSettings";
+import Calendar from "./pages/Calendar";
+import GuestCalendar from "./pages/GuestCalendar";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -98,6 +101,9 @@ export default function App() {
 
           <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
           <Route path="/guest" element={<Guest />} />
+          <Route path="/GuestSettings" element={<GuestSettings />} />
+          <Route path="/Calendar" element={<Calendar />} />
+          <Route path="/GuestCalendar" element={<GuestCalendar />} />
         </Routes>
       </div>
     </>

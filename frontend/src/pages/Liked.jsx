@@ -29,7 +29,9 @@ export default function Liked() {
                 venue={event.venue}
                 start_datetime={event.start_datetime}
                 end_datetime={event.end_datetime}
+                event_type={event.event_type}
                 event_capacity={event.event_capacity}
+                image={event.image}
                 isMyTickets={false}
                 isLiked={true}
               />

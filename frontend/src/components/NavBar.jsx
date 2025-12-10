@@ -9,7 +9,7 @@ export default function NavBar() {
       <Link to="/tickets">
         <img src="bookmark.svg" className="bookmarkIcon"></img>
       </Link>
-      <Link to="/Login">
+      <Link to="/calendar">
         <img src="calendar.svg" className="calendarIcon"></img>
       </Link>
       <Link to="/settings">
