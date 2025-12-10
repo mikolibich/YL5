@@ -25,8 +25,12 @@ export default function MyTickets() {
                 key={index}
                 title={event.title}
                 description={event.description}
-                location={event.location}
-                spaces={event.spaces}
+                venue={event.venue}
+                event_type={event.event_type}
+                start_datetime={event.start_datetime}
+                end_datetime={event.end_datetime}
+                event_capacity={event.event_capacity}
+                image={event.image}
                 isMyTickets={true}
               />
             ))

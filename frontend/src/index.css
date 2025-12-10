@@ -192,9 +192,14 @@ button:focus-visible {
 }
 
 #logInBox input {
-  margin-bottom: 0.3em;
   font-size: 1em;
   text-align: center;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  padding: 10px 0px;
+  margin-bottom: 20px;
+  border-radius: 25px;
 }
 
 #logInBox button {
@@ -232,15 +237,14 @@ button:focus-visible {
 
 #eventCard {
   position: relative;
+  padding-left: 80px;
+  min-height: 90px;
+  margin-bottom: 15px;
 }
 
-#eventCard p {
-  color: #8c8c8c;
-  font-size: 15px;
-  margin: 5px 0px;
-}
-
-#eventCard .buttonGroup {
+#eventCard .buttonGroup,
+#eventCard #deleteButton,
+#eventCard #unlikeButton {
   position: absolute;
   bottom: 10px;
   right: 10px;
@@ -248,14 +252,16 @@ button:focus-visible {
   gap: 5px;
 }
 
-#eventCard .buttonGroup button {
+#eventCard .buttonGroup button,
+#eventCard #deleteButton,
+#eventCard #unlikeButton {
   width: auto;
   padding: 5px 10px;
   font-size: 0.9rem;
+  border: none;
 }
 
-#eventCard button {
-  border: none;
+#eventCard .buttonGroup button {
   background-color: white;
   color: #34c759;
 }
@@ -263,20 +269,35 @@ button:focus-visible {
 #eventCard #deleteButton,
 #eventCard #unlikeButton {
   color: #8e2626;
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+  background-color: white;
 }
 
 #eventCard .tag {
   display: inline-block;
   margin-bottom: 15px;
+  margin-right: 10px;
   padding: 10px;
   border-style: none;
   border-radius: 25px;
   background-color: #d9d9d9;
   font-size: 12px;
   color: #404040;
+}
+
+#eventCard.expanded {
+  padding-bottom: 50px;
+}
+
+#eventCard img {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 35px;
+  border-radius: 15%;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 #signup-text {
@@ -295,6 +316,83 @@ button:focus-visible {
 
 #welcomeTextGuest h1 {
   padding-left: 20px;
+}
+
+.calendarPage {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f1f1f1;
+  box-sizing: border-box;
+}
+
+/* Page title */
+.calendarTitle {
+  font-size: 2rem;
+  color: #213547;
+  margin-bottom: 15px;
+}
+
+.calendarNav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.calendarNav button {
+  padding: 8px 14px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  background-color: #34c759;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendarNav button:hover {
+  background-color: #28a745;
+}
+
+.bigCalendar {
+  height: 600px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+}
+.rbc-calendar,
+.rbc-calendar * {
+  color: black !important;
+}
+
+.rbc-event {
+  background-color: #1a9ca6 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px;
+  padding: 2px 4px;
+}
+
+#settingsWrapper {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f1f1f1;
+  box-sizing: border-box;
+}
+
+#logOutButton {
+  display: block;
+  color: #8e2626;
+  text-align: center;
+  border-style: none;
+  padding: 10px;
+  margin: 0 auto;
+  border-width: 2px;
+  border-radius: 25px;
+  text-decoration: none;
+  background-color: #d9d9da;
 }
 
 @media (prefers-color-scheme: light) {

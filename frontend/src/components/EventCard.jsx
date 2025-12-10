@@ -54,9 +54,12 @@ export default function EventCard({
       currentBookings.push({
         title,
         description,
-        venue,
+        venue, // full venue object
+        event_type, // full event_type object
         start_datetime,
         end_datetime,
+        event_capacity,
+        image,
       });
       localStorage.setItem("bookings", JSON.stringify(currentBookings));
 
@@ -70,11 +73,33 @@ export default function EventCard({
     }
   };
 
+  const handleLike = (e) => {
+    e.stopPropagation();
+    const likedEvents = JSON.parse(localStorage.getItem("liked events")) || [];
+
+    if (!likedEvents.some((b) => b.title === title)) {
+      likedEvents.push({
+        title,
+        description,
+        venue,
+        event_type,
+        start_datetime,
+        end_datetime,
+        event_capacity,
+        image,
+      });
+      localStorage.setItem("liked events", JSON.stringify(likedEvents));
+      alert(`${title} added to your liked events!`);
+    } else {
+      alert(`${title} is already in your liked events`);
+    }
+  };
+
   if (!visible) return null;
 
   return (
     <section
-      className="eventListing"
+      className={`eventListing ${isExpanded ? "expanded" : ""}`}
       id="eventCard"
       onClick={() => setIsExpanded(!isExpanded)}
     >
@@ -88,17 +113,17 @@ export default function EventCard({
         <>
           <p>Description: {description}</p>
           <p>
-            Venue: {venue?.name}, {venue?.city}, {venue?.address} (
+            Venue: {venue?.name}, {venue?.state}, {venue?.address} (
             {venue?.postcode})
           </p>
           <p>Start: {new Date(start_datetime).toLocaleString()}</p>
           <p>End: {new Date(end_datetime).toLocaleString()}</p>
 
-          {/* NEW: Spaces Left */}
           <p>Spaces left: {spacesLeft}</p>
 
           <h3>Tags</h3>
-          <div className="tag">Type: {event_type?.name || "N/A"}</div>
+          <div className="tag">{event_type?.name || "N/A"}</div>
+          <div className="tag">{venue?.venue_feature?.name || "N/A"}</div>
 
           {!isGuest && (
             <>
@@ -107,12 +132,14 @@ export default function EventCard({
                   id="unlikeButton"
                   onClick={(e) => {
                     e.stopPropagation();
-                    let likedEvents =
+                    const likedEvents =
                       JSON.parse(localStorage.getItem("liked events")) || [];
-                    likedEvents = likedEvents.filter((b) => b.title !== title);
+                    const updatedLikes = likedEvents.filter(
+                      (b) => b.title !== title
+                    );
                     localStorage.setItem(
                       "liked events",
-                      JSON.stringify(likedEvents)
+                      JSON.stringify(updatedLikes)
                     );
                     alert(`${title} removed from your liked events!`);
                     setVisible(false);
@@ -140,30 +167,7 @@ export default function EventCard({
                   >
                     Book Event
                   </button>
-                  <button
-                    className="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const likedEvents =
-                        JSON.parse(localStorage.getItem("liked events")) || [];
-                      if (!likedEvents.some((b) => b.title === title)) {
-                        likedEvents.push({
-                          title,
-                          description,
-                          venue,
-                          start_datetime,
-                          end_datetime,
-                        });
-                        localStorage.setItem(
-                          "liked events",
-                          JSON.stringify(likedEvents)
-                        );
-                        alert(`${title} added to your liked events!`);
-                      } else {
-                        alert(`${title} is already in your liked events`);
-                      }
-                    }}
-                  >
+                  <button className="button" onClick={handleLike}>
                     Like
                   </button>
                 </div>

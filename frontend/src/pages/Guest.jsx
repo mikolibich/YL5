@@ -35,10 +35,10 @@ export default function Guest() {
       </div>
 
       <nav id="navBar" class="centerAlign">
-        <Link to="/Login">
+        <Link to="/guestcalendar">
           <img src="calendar.svg" className="calendarIcon"></img>
         </Link>
-        <Link to="/settings">
+        <Link to="/GuestSettings">
           <img src="settings.svg" className="settingsIcon"></img>
         </Link>
       </nav>
