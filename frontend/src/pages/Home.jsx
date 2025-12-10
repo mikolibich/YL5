@@ -10,7 +10,6 @@ export default function Home() {
   useEffect(() => {
     async function loadEvents() {
       try {
-        // Fetch all events (or add filters here)
         const data = await fetchEvents();
         setEvents(data);
       } catch (err) {
