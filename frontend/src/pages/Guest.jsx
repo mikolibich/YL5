@@ -58,6 +58,7 @@ export default function Guest() {
               event_capacity={event.event_capacity}
               image={event.image}
               status={event.status}
+              isGuest={true}
             />
           ))}
         </div>

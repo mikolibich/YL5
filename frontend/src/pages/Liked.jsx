@@ -19,7 +19,7 @@ export default function Liked() {
       <div id="upcomingEvents" className="blackText">
         <div id="eventListingContainer">
           {likedEvents.length === 0 ? (
-            <p>No saved events yet.</p>
+            <p>No liked events yet.</p>
           ) : (
             likedEvents.map((event, index) => (
               <EventCard

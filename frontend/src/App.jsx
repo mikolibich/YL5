@@ -40,59 +40,66 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/landing" element={<Landing />} />
+    <>
+      <div id="pageWrapper">
+        <Routes>
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/login" element={<Login onLogin={setIsLoggedIn} />} />
 
-      {/* Login page */}
-      <Route path="/login" element={<Login onLogin={setIsLoggedIn} />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+                <NavBar />
+              </ProtectedRoute>
+            }
+          />
 
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <Home />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/tickets"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <MyTickets />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/liked"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <Liked />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/notifications"
-        element={
-          <ProtectedRoute>
-            <NavBar />
-            <Notifications />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
-      <Route path="/guest" element={<Guest />} />
-    </Routes>
+          <Route
+            path="/tickets"
+            element={
+              <ProtectedRoute>
+                <MyTickets />
+                <NavBar />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+                <NavBar />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/liked"
+            element={
+              <ProtectedRoute>
+                <Liked />
+                <NavBar />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+                <NavBar />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
+          <Route path="/guest" element={<Guest />} />
+        </Routes>
+      </div>
+    </>
   );
 }
