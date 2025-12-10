@@ -20,7 +20,7 @@ class VenueSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "state",
-            "city",
+            "address",
             "postcode",
             "max_capacity",
         ]
@@ -77,6 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
             "phone_number",
             "dob",
             "notes",
+            "user",
         ]
 
 
@@ -91,7 +92,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             "id",
             "attendee",
             "event",
-            "status",
             "notes",
             "created_at",
         ]
