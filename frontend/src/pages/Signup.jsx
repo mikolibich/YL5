@@ -5,6 +5,7 @@ export default function Signup({ onSignup }) {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   // Ensure logged-out state on page load
@@ -22,6 +23,7 @@ export default function Signup({ onSignup }) {
       fname,
       lname,
       phone,
+      password,
     };
 
     localStorage.setItem("users", JSON.stringify(users));
@@ -63,6 +65,14 @@ export default function Signup({ onSignup }) {
           placeholder="Phone number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
 
