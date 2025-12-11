@@ -13,7 +13,9 @@ export default function GuestSettings() {
         />
       </Link>
       <h1 class="blackText">Settings Page</h1>
-      <Link to="/landing">Log out</Link>
+      <Link to="/landing" id="logOutButton">
+        Log out
+      </Link>
     </div>
   );
 }
