@@ -35,9 +35,9 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div id="logInBox" style={{ padding: "2rem" }}>
+    <div id="logInBox">
       <Link to="/landing">
-        <img src="leftArrow.svg" alt="Back" />
+        <img src="leftArrow.svg" alt="Back" className="backArrow" />
       </Link>
 
       <h3 className="blackText">Phone Number</h3>

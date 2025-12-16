@@ -14,6 +14,7 @@ import Guest from "./pages/Guest";
 import GuestSettings from "./pages/GuestSettings";
 import Calendar from "./pages/Calendar";
 import GuestCalendar from "./pages/GuestCalendar";
+import Credits from "./pages/credits";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,78 +35,85 @@ export default function App() {
 
   const ProtectedRoute = ({ children }) => {
     if (isLoading) return null;
-    return isLoggedIn ? children : <Navigate to="/landing" replace />;
+
+    if (!isLoggedIn) {
+      return <Navigate to="/guest" replace />;
+    }
+
+    return children;
   };
 
   if (isLoading) return null;
+
   if (location.pathname === "/") {
-    return <Navigate to={isLoggedIn ? "/home" : "/landing"} replace />;
+    return <Navigate to="/guest" replace />;
   }
 
   return (
-    <>
-      <div id="pageWrapper">
-        <Routes>
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/login" element={<Login onLogin={setIsLoggedIn} />} />
+    <div id="pageWrapper">
+      <Routes>
+        <Route path="/guest" element={<Guest />} />
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/login" element={<Login onLogin={setIsLoggedIn} />} />
+        <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
+        <Route path="/credits" element={<Credits />} />
 
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-                <NavBar />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/tickets"
-            element={
-              <ProtectedRoute>
-                <MyTickets />
-                <NavBar />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/tickets"
+          element={
+            <ProtectedRoute>
+              <MyTickets />
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-                <NavBar />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/liked"
-            element={
-              <ProtectedRoute>
-                <Liked />
-                <NavBar />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/liked"
+          element={
+            <ProtectedRoute>
+              <Liked />
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/notifications"
-            element={
-              <ProtectedRoute>
-                <Notifications />
-                <NavBar />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+              <NavBar />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route path="/signup" element={<Signup onSignup={setIsLoggedIn} />} />
-          <Route path="/guest" element={<Guest />} />
-          <Route path="/GuestSettings" element={<GuestSettings />} />
-          <Route path="/Calendar" element={<Calendar />} />
-          <Route path="/GuestCalendar" element={<GuestCalendar />} />
-        </Routes>
-      </div>
-    </>
+        <Route path="/GuestSettings" element={<GuestSettings />} />
+        <Route path="/GuestCalendar" element={<GuestCalendar />} />
+        <Route path="/Calendar" element={<Calendar />} />
+
+        <Route path="*" element={<Navigate to="/guest" replace />} />
+      </Routes>
+    </div>
   );
 }

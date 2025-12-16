@@ -28,9 +28,6 @@ export default function Guest() {
   return (
     <div id="homeWrapper">
       <div id="welcomeTextGuest" className="headingText">
-        <Link to="/landing">
-          <img src="leftArrow.svg" alt="back" id="backArrowGuest" />
-        </Link>
         <h1 className="blackText leftAlign">Rose Foundation</h1>
       </div>
 
@@ -45,6 +42,10 @@ export default function Guest() {
 
       <div id="upcomingEvents" className="blackText">
         <h2 className="blackText leftAlign">Upcoming events</h2>
+        <h3 id="signInText">
+          <Link to="/landing">Sign in</Link> to reserve your spot in an upcoming
+          event!
+        </h3>
         <div id="eventListingContainer">
           {events.map((event) => (
             <EventCard
