@@ -187,8 +187,18 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
-#logInBox h1 {
-  font-size: 1.4em;
+#logInBox {
+  margin-top: 10px;
+  padding: 2rem;
+  text-decoration: none;
+}
+
+#logInBox .backArrow {
+  margin-bottom: 20px;
+}
+
+#logInBox h3 {
+  margin-top: 0;
 }
 
 #logInBox input {
@@ -300,6 +310,10 @@ button:focus-visible {
   pointer-events: none;
 }
 
+.time {
+  font-weight: bold;
+}
+
 #signup-text {
   text-align: center;
 }
@@ -318,6 +332,15 @@ button:focus-visible {
   padding-left: 20px;
 }
 
+#signInText {
+  font-weight: normal;
+}
+
+#signInText a {
+  color: #199ca6;
+  font-weight: bold;
+}
+
 .calendarPage {
   padding: 20px;
   min-height: 100vh;
@@ -325,7 +348,6 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
-/* Page title */
 .calendarTitle {
   font-size: 2rem;
   color: #213547;
@@ -393,6 +415,31 @@ button:focus-visible {
   border-radius: 25px;
   text-decoration: none;
   background-color: #d9d9da;
+  margin-bottom: 10px;
+  font-weight: bold;
+  width: 100%;
+}
+
+#logInButton,
+#creditsLink {
+  display: block;
+  color: #199ca6;
+  text-align: center;
+  border-style: none;
+  padding: 10px;
+  margin: 0 auto;
+  border-width: 2px;
+  border-radius: 25px;
+  text-decoration: none;
+  background-color: #d9d9da;
+  margin-bottom: 10px;
+  font-weight: bold;
+  width: 100%;
+}
+
+#creditsLink {
+  color: black;
+  font-weight: normal;
 }
 
 @media (prefers-color-scheme: light) {

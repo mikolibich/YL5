@@ -116,8 +116,10 @@ export default function EventCard({
             Venue: {venue?.name}, {venue?.state}, {venue?.address} (
             {venue?.postcode})
           </p>
-          <p>Start: {new Date(start_datetime).toLocaleString()}</p>
-          <p>End: {new Date(end_datetime).toLocaleString()}</p>
+          <p className="time">
+            Start: {new Date(start_datetime).toLocaleString()}
+          </p>
+          <p className="time">End: {new Date(end_datetime).toLocaleString()}</p>
 
           <p>Spaces left: {spacesLeft}</p>
 

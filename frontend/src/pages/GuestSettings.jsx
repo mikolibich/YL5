@@ -1,9 +1,10 @@
-import NavBar from "../components/NavBar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function GuestSettings() {
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <div id="settingsWrapper">
       <Link to="/guest">
         <img
           src="leftArrow.svg"
@@ -12,10 +13,13 @@ export default function GuestSettings() {
           style={{ marginTop: "10px" }}
         />
       </Link>
-      <h1 class="blackText">Settings Page</h1>
-      <Link to="/landing" id="logOutButton">
-        Log out
-      </Link>
+      <h1 className="blackText">Settings Page</h1>
+      <button id="logInButton" onClick={() => navigate("/landing")}>
+        Log In
+      </button>
+      <button id="creditsLink" onClick={() => navigate("/credits")}>
+        Credits
+      </button>
     </div>
   );
 }
